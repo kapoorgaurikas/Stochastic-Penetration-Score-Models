@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Stochastic Penetration Score Lab | LLN & CLT</title>
+<style>
+:root{--ink:#302b25;--muted:#7b7165;--line:#e7ddcf;--paper:#f5f0e7;--accent:#77634d;--accent-dark:#5f4c39;--mint:#eee5d7;--coral:#bd735b;--white:#fffdf9;--shadow:rgba(58,43,27,.055);--sage:#82917a}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--paper);color:var(--ink);font:15px/1.65 Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif}
+header{position:relative;overflow:hidden;background:linear-gradient(135deg,#fbf7ef 0%,#eee3d2 100%);color:var(--ink);padding:58px 22px 50px;border-bottom:1px solid var(--line)}header:after{content:"Sₙ / √n";position:absolute;right:5%;bottom:-35px;font:italic 105px/1 Georgia,serif;color:rgba(119,99,77,.075);pointer-events:none;white-space:nowrap}
+.wrap{max-width:1160px;margin:auto;padding:0 22px}header .wrap{position:relative;z-index:1}header .eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:11px;font-weight:750;text-transform:uppercase;letter-spacing:.14em;color:var(--accent)}header .eyebrow:before{content:"";display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--accent)}h1{font-weight:680;font-size:clamp(32px,4.5vw,53px);line-height:1.08;letter-spacing:-.045em;max-width:780px;margin:15px 0}header p{max-width:760px;color:#786d60;margin:15px 0 0;font-size:16px}
+main{padding:30px 0 60px}.panel{background:var(--white);border:1px solid var(--line);border-radius:16px;padding:24px;margin:0 0 18px;box-shadow:0 4px 20px var(--shadow);position:relative}.panel h2{margin:0 0 6px;font-size:22px;line-height:1.3;font-weight:680;letter-spacing:-.025em}.sub{color:var(--muted);margin:0 0 19px}.controls{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:14px}.field label{display:block;font-size:11px;font-weight:750;text-transform:uppercase;letter-spacing:.065em;color:#786d60;margin-bottom:7px}.field input,.field select{width:100%;padding:12px 13px;border:1px solid #d9cbbb;border-radius:10px;background:#fffdf9;color:#302b25;font:inherit;transition:border-color .15s,box-shadow .15s;color-scheme:light}.field input:focus,.field select:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(119,99,77,.13)}.field select{background-color:#fffdf9!important;color:#302b25!important}.field select option,.field select optgroup{background-color:#fffdf9!important;color:#302b25!important}.field select option:hover,.field select option:focus,.field select option:active{background:#dce8ce!important;background-color:#dce8ce!important;color:#263021!important}.field select option:checked{background:#e9ddca!important;background-color:#e9ddca!important;color:#302b25!important}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}.btn{border:1px solid #d9cbbb;border-radius:10px;padding:11px 16px;font:650 13px ui-sans-serif,system-ui,sans-serif;cursor:pointer;transition:transform .15s,box-shadow .15s,background .15s}.primary{background:var(--accent);color:#fff;border-color:var(--accent)}.primary:hover{background:var(--accent-dark)}.secondary{background:#fffdf9;color:var(--ink)}.secondary:hover{background:#f1e8dc;border-color:#cdbba5}.btn:hover{transform:translateY(-1px);box-shadow:0 4px 12px var(--shadow)}.hint{font-size:12px;color:var(--muted);margin-top:12px}
+.metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}.metric{padding:17px;border:1px solid var(--line);border-radius:13px;background:linear-gradient(180deg,#fffdf9,#f9f3e9);border-top:3px solid var(--accent)}.metric:nth-child(2){border-top-color:var(--coral)}.metric:nth-child(3){border-top-color:#7e9cda}.metric:nth-child(4){border-top-color:#a6b85b}.metric .label{font-size:10px;font-weight:750;text-transform:uppercase;letter-spacing:.07em;color:var(--muted)}.metric .value{font-weight:650;font-size:27px;line-height:1.3;margin-top:7px;letter-spacing:-.035em;overflow-wrap:anywhere}.metric .detail{font-size:12px;color:var(--muted)}
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}.chartbox{min-width:0}.chartbox h3{margin:0 0 5px;font-size:17px;font-weight:680}.chartbox p{margin:0 0 10px;color:var(--muted);font-size:12px}.chart{display:block;width:100%;height:300px;border:1px solid var(--line);border-radius:12px;background:#fffdf9}.legend{display:flex;gap:13px;flex-wrap:wrap;font-size:12px;color:var(--muted);margin-top:10px}.dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:5px}
+.formula{background:#f0e7da;border:1px solid #e4d5c1;border-left:3px solid var(--accent);padding:14px 16px;border-radius:10px;overflow-x:auto;margin:12px 0}.formula code{font-size:14px;color:#514333;white-space:normal}table{width:100%;border-collapse:collapse;font-size:14px}th,td{padding:12px;text-align:left;border-bottom:1px solid var(--line)}th{background:#f0e7da;font-size:10px;font-weight:750;text-transform:uppercase;letter-spacing:.07em;color:#786d60}tbody tr:hover{background:#faf5ec}td.num{text-align:right;font-variant-numeric:tabular-nums}.note{padding:15px 17px;border-radius:11px;background:#f8ece4;border:1px solid #ecd6c8;border-left:3px solid var(--coral);color:#714c3b}footer{color:var(--muted);font-size:11px;text-align:center;padding:24px;letter-spacing:.03em}
+@media(max-width:1000px){.controls{grid-template-columns:repeat(3,minmax(0,1fr))}}@media(max-width:800px){.controls{grid-template-columns:repeat(2,minmax(0,1fr))}.metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.grid2{grid-template-columns:1fr}.panel{padding:18px}header:after{font-size:76px;right:1%}}@media(max-width:420px){.controls{grid-template-columns:1fr}.metric .value{font-size:23px}header{padding:38px 10px}.wrap{padding:0 14px}}
+</style>
+</head>
+<body>
+<header><div class="wrap"><div class="eyebrow">Interactive statistics lab</div><h1>Stochastic Penetration Score Models</h1><p>Explore independent random increments, the Law of Large Numbers (LLN), variance under normalization, and the Central Limit Theorem (CLT) through repeatable simulations.</p></div></header>
+<main class="wrap">
+<section class="panel">
+<h2>Experiment controls</h2><p class="sub">Choose a model and simulation size, then run a new experiment. The number of trajectories controls the empirical distribution estimate. Use the seed to reproduce the same run, or change it to generate a different sample.</p>
+<div class="controls">
+<div class="field"><label for="model">Score model</label><select id="model"><option value="rademacher">Rademacher (−1, +1)</option><option value="bernoulli">Bernoulli (0, 1)</option></select></div>
+<div class="field"><label for="n">Systems (n)</label><select id="n"><option>10</option><option>50</option><option selected>100</option><option>250</option><option>500</option><option>1000</option><option>2000</option></select></div>
+<div class="field"><label for="m">Attackers = trajectories (m)</label><select id="m"><option>100</option><option>500</option><option selected>1000</option><option>5000</option><option>10000</option></select></div>
+<div class="field"><label for="p">Bernoulli success probability (p)</label><input id="p" type="number" min="0" max="1" step="0.05" value="0.3"></div>
+<div class="field"><label for="seed">Random seed</label><input id="seed" type="number" min="1" max="999999999" step="1" value="2026"></div>
+</div>
+<div class="actions"><button class="btn primary" id="run">Run simulation</button><button class="btn secondary" id="reset">Reset defaults</button><button class="btn secondary" id="download">Download summary CSV</button><button class="btn secondary" id="saveRun">Save run to compare</button></div>
+<div class="hint">Interpretation: each of the m attackers runs through the n systems independently, so attacker j contributes one trajectory S₁…Sₙ (Xᵢ = score on system i). Attackers do not interact.</div>
+</section>
+
+<section class="panel"><h2>Simulation summary</h2><p class="sub">Empirical statistics across the selected trajectories. Values should approach their theoretical counterparts as m increases, subject to random sampling variation.</p><div class="metrics" id="metrics"></div></section>
+
+<section class="panel"><h2>1. Sample trajectories</h2><p class="sub">A selection of cumulative sums across the n steps. Positive and negative increments can cancel in the Rademacher model.</p><div class="chartbox"><canvas id="trajectory" class="chart" aria-label="Cumulative score trajectories"></canvas><div class="legend" id="trajectoryLegend"></div></div></section>
+
+<section class="grid2">
+<div class="panel chartbox"><h2>2. Total score</h2><p>Empirical distribution of Sₙ across trajectories.</p><canvas id="totalHist" class="chart" aria-label="Total score distribution"></canvas></div>
+<div class="panel chartbox"><h2>3. Average score</h2><p>Distribution of Sₙ/n; LLN predicts concentration around the expected increment.</p><canvas id="averageHist" class="chart" aria-label="Average score distribution"></canvas></div>
+<div class="panel chartbox"><h2>4. Normalized total</h2><p>Distribution of Sₙ/√n. In the Rademacher model, the CLT predicts convergence to N(0,1).</p><canvas id="normalizedHist" class="chart" aria-label="Normalized score distribution"></canvas></div>
+<div class="panel chartbox"><h2>5. Variance under normalization</h2><p>Empirical and theoretical variances for the three score quantities.</p><canvas id="varianceChart" class="chart" aria-label="Variance comparison"></canvas></div>
+</section>
+
+<section class="panel" id="comparisonPanel"><h2>Experiment notebook</h2><p class="sub">Save runs to compare how changing n, m, p, or the model affects the empirical results. Saved rows stay in this browser session only.</p><div class="actions" style="margin-top:0;margin-bottom:12px"><button class="btn secondary" id="clearRuns">Clear saved runs</button></div><div style="overflow-x:auto"><table><thead><tr><th>Run</th><th>Model</th><th>n</th><th>m</th><th>Seed</th><th>Average mean</th><th>Normalized variance</th><th></th></tr></thead><tbody id="savedRuns"><tr><td colspan="8">No saved runs yet. Run an experiment, then select “Save run to compare”.</td></tr></tbody></table></div></section>
+
+<section class="panel"><h2>Empirical versus theoretical results</h2><div style="overflow-x:auto"><table><thead><tr><th>Quantity</th><th>Empirical mean</th><th>Theoretical mean</th><th>Empirical variance</th><th>Theoretical variance</th></tr></thead><tbody id="resultsTable"></tbody></table></div></section>
+
+<section class="panel"><h2>6. Increasing n: LLN, variance and CLT</h2><p class="sub">For each n in {5, 10, 25, …, 2000} the experiment is repeated with min(m, 2000) attackers. All panels below use the same data.</p>
+<div class="grid2"><div class="chartbox"><h3>LLN: P(|Sₙ/n − μ| &gt; ε)</h3><p>Convergence in probability: the deviation probability must go to 0 as n grows (dashed: Chebyshev bound σ²/(nε²)).</p><canvas id="llnChart" class="chart"></canvas><div class="legend" id="llnLegend"></div></div>
+<div class="chartbox"><h3>Variance vs n (log–log)</h3><p>Solid: empirical. Dashed: theory. Var(Sₙ)=nσ² grows, Var(Sₙ/n)=σ²/n shrinks, Var(Sₙ/√n)=σ² stays flat.</p><canvas id="varN" class="chart"></canvas><div class="legend" id="varLegend"></div></div></div>
+<h3 style="margin:22px 0 4px">CLT: standardized total at increasing n</h3><p class="sub" id="cltSub"></p>
+<div class="grid2" id="cltGrid"></div>
+<div class="chartbox" style="margin-top:18px"><h3>Kolmogorov–Smirnov distance to N(0,1)</h3><p>Sup-distance between the empirical CDF and Φ. Dashed: unavoidable lattice gap ≈ step·φ(0)/(2σ√n) of a discrete sum; sampling noise ≈ 1/√m also contributes.</p><canvas id="ksChart" class="chart"></canvas></div>
+<div id="convergenceText" class="hint"></div></section>
+<section class="panel"><h2>Interpretation: n systems, m attackers</h2><div id="interpText"></div></section>
+
+<section class="panel"><h2>Mathematical guide</h2>
+<h3>Bernoulli model</h3><div class="formula"><code>E[Xᵢ] = p, Var(Xᵢ) = p(1−p); E[Sₙ] = np, Var(Sₙ) = np(1−p).</code></div>
+<p>Therefore, E[Sₙ/n] = p and Var(Sₙ/n) = p(1−p)/n. The average converges in probability to p. The variance of Sₙ/√n is p(1−p), but its mean is p√n, so the uncentered normalized total does not converge to N(0,1) when p &gt; 0.</p>
+<h3>Rademacher model</h3><div class="formula"><code>E[Xᵢ] = 0, Var(Xᵢ) = 1; E[Sₙ] = 0, Var(Sₙ) = n.</code></div>
+<p>Thus E[Sₙ/n] = 0 and Var(Sₙ/n) = 1/n, so the average converges in probability to zero. Also, E[Sₙ/√n] = 0 and Var(Sₙ/√n) = 1. By the Central Limit Theorem, Sₙ/√n converges in distribution to N(0,1).</p>
+<div class="note"><strong>Interpretation caution:</strong> This is a simplified stochastic score model. It does not include real-world network topology, attacker coordination, system dependence, defensive controls, or attack rates. Those require additional assumptions.</div>
+</section>
+<footer></footer>
+</main>
+<script>
+(() => {
+const $ = id => document.getElementById(id);
+const colors = ["#77634d","#bd735b","#82917a","#c4a66a","#9b8ba8","#6f665a"];
+let current = null;
+let savedRuns = [];
+function mean(a){return a.reduce((s,x)=>s+x,0)/a.length}
+function variance(a){const mu=mean(a);return a.reduce((s,x)=>s+(x-mu)**2,0)/a.length}
+function fmt(x){return Number.isFinite(x)?x.toFixed(4):"—"}
+function makeRng(seed){let state=(Number(seed)>>>0)||1;return function(){state=(state+0x6D2B79F5)|0;let t=Math.imul(state^(state>>>15),1|state);t^=t+Math.imul(t^(t>>>7),61|t);return ((t^(t>>>14))>>>0)/4294967296;}}
+function randomIncrement(model,p,rng){return model==="bernoulli"?(rng()<p?1:0):(rng()<0.5?1:-1)}
+function simulate(n,m,model,p,seed=2026){
+ const rng=makeRng(seed);
+ const totals=[], averages=[], normalized=[], paths=[];
+ for(let j=0;j<m;j++){
+  let s=0; const path=[0];
+  for(let i=0;i<n;i++){s+=randomIncrement(model,p,rng); if(j<Math.min(8,m))path.push(s);}
+  totals.push(s); averages.push(s/n); normalized.push(s/Math.sqrt(n));
+  if(j<Math.min(8,m))paths.push(path);
+ }
+ const mu=model==="bernoulli"?p:0, v=model==="bernoulli"?p*(1-p):1;
+ return {n,m,model,p,seed,totals,averages,normalized,paths,mu,v};
+}
+function canvasSetup(canvas){
+ const rect=canvas.getBoundingClientRect(), dpr=window.devicePixelRatio||1;
+ canvas.width=Math.max(300,Math.round(rect.width*dpr)); canvas.height=Math.max(220,Math.round(rect.height*dpr));
+ const ctx=canvas.getContext("2d");ctx.setTransform(dpr,0,0,dpr,0,0);
+ return {ctx,w:canvas.width/dpr,h:canvas.height/dpr};
+}
+function axes(ctx,w,h,xLabel,yLabel){
+ ctx.clearRect(0,0,w,h);ctx.fillStyle="#fffdf9";ctx.fillRect(0,0,w,h);
+ ctx.strokeStyle="#eee5d9";ctx.lineWidth=1;ctx.fillStyle="#7b7165";ctx.font="11px system-ui";
+ const L=48,R=14,T=16,B=38;
+ for(let i=0;i<=4;i++){let y=T+(h-T-B)*i/4;ctx.beginPath();ctx.moveTo(L,y);ctx.lineTo(w-R,y);ctx.stroke()}
+ ctx.strokeStyle="#d9cbbb";ctx.beginPath();ctx.moveTo(L,T);ctx.lineTo(L,h-B);ctx.lineTo(w-R,h-B);ctx.stroke();
+ ctx.textAlign="center";ctx.fillText(xLabel,(L+w-R)/2,h-9);
+ ctx.save();ctx.translate(13,(T+h-B)/2);ctx.rotate(-Math.PI/2);ctx.fillText(yLabel,0,0);ctx.restore();
+ return {L,R,T,B,pw:w-L-R,ph:h-T-B};
+}
+function drawLine(canvas,series,xLabel,yLabel){
+ const {ctx,w,h}=canvasSetup(canvas);const a=axes(ctx,w,h,xLabel,yLabel);
+ const allX=series.flatMap(s=>s.data.map(d=>d[0])),allY=series.flatMap(s=>s.data.map(d=>d[1])).filter(Number.isFinite);
+ let xmin=Math.min(...allX),xmax=Math.max(...allX),ymin=Math.min(0,...allY),ymax=Math.max(0.001,...allY);
+ if(xmin===xmax)xmax=xmin+1;if(ymin===ymax){ymin-=1;ymax+=1}
+ const x=x=>a.L+(x-xmin)/(xmax-xmin)*a.pw, y=v=>a.T+a.ph-(v-ymin)/(ymax-ymin)*a.ph;
+ ctx.fillStyle="#7b7165";ctx.font="10px system-ui";ctx.textAlign="center";
+ for(let i=0;i<=4;i++){let val=xmin+(xmax-xmin)*i/4;ctx.fillText(Number(val.toPrecision(3)).toString(),x(val),h-a.B+15)}
+ ctx.textAlign="right";for(let i=0;i<=4;i++){let val=ymin+(ymax-ymin)*i/4;ctx.fillText(Number(val.toPrecision(3)).toString(),a.L-7,y(val)+3)}
+ series.forEach((s,idx)=>{ctx.strokeStyle=s.color||colors[idx];ctx.lineWidth=s.width||2;ctx.beginPath();s.data.forEach((d,i)=>{if(i===0)ctx.moveTo(x(d[0]),y(d[1]));else ctx.lineTo(x(d[0]),y(d[1]))});ctx.stroke()});
+}
+function histogram(canvas,arr,reference=null,step=0){
+ const {ctx,w,h}=canvasSetup(canvas);const a=axes(ctx,w,h,"Score value","Density");
+ let min=Math.min(...arr),max=Math.max(...arr);if(min===max){min-=1;max+=1}
+ let bins=Math.min(45,Math.max(12,Math.round(Math.sqrt(arr.length)))),bw=(max-min)/bins;
+ if(step){const k=Math.max(1,Math.ceil((max-min)/step/45));bw=step*k;min-=step/2;max+=step/2;bins=Math.max(1,Math.ceil((max-min)/bw-1e-9));max=min+bins*bw}
+ const counts=Array(bins).fill(0);
+ arr.forEach(v=>{let i=Math.min(bins-1,Math.floor((v-min)/bw));counts[i]++});
+ const dens=counts.map(c=>c/(arr.length*bw));let ymax=Math.max(...dens,reference?1/Math.sqrt(2*Math.PI):0)*1.15||1;
+ const x=v=>a.L+(v-min)/(max-min)*a.pw,y=v=>a.T+a.ph-v/ymax*a.ph;
+ ctx.fillStyle="#e5d6c2";ctx.strokeStyle="#77634d";
+ dens.forEach((d,i)=>{let x0=x(min+i*bw),x1=x(min+(i+1)*bw);let yy=y(d);ctx.fillRect(x0+1,yy,Math.max(1,x1-x0-2),a.T+a.ph-yy)});
+ if(reference&&reference.fn){ctx.strokeStyle="#bd735b";ctx.lineWidth=2.5;ctx.beginPath();for(let i=0;i<=200;i++){let xv=min+(max-min)*i/200, yy=reference.fn(xv);if(i===0)ctx.moveTo(x(xv),y(yy));else ctx.lineTo(x(xv),y(yy))}ctx.stroke()}
+ ctx.fillStyle="#7b7165";ctx.font="10px system-ui";ctx.textAlign="center";
+ for(let i=0;i<=4;i++){let v=min+(max-min)*i/4;ctx.fillText(Number(v.toPrecision(3)).toString(),x(v),h-a.B+15)}
+ ctx.textAlign="right";for(let i=0;i<=4;i++){let v=ymax*i/4;ctx.fillText(v.toFixed(2),a.L-7,y(v)+3)}
+}
+function drawTrajectory(r){
+ const series=r.paths.map((path,i)=>({data:path.map((v,j)=>[j,v]),color:colors[i%colors.length],width:1.6}));
+ drawLine($("trajectory"),series,"Step i","Cumulative score");
+ $("trajectoryLegend").innerHTML=r.paths.map((_,i)=>`<span><i class="dot" style="background:${colors[i%colors.length]}"></i>Trajectory ${i+1}</span>`).join("");
+}
+const lat=r=>r.model==="bernoulli"?1:2;
+const STUDY_NS=[5,10,25,50,100,250,500,1000,2000],CLT_NS=[5,50,500,2000];
+function Phi(x){const t=1/(1+0.3275911*Math.abs(x)/Math.SQRT2);const y=1-(((((1.061405429*t-1.453152027)*t)+1.421413741)*t-0.284496736)*t+0.254829592)*t*Math.exp(-x*x/2);return x>=0?0.5*(1+y):0.5*(1-y)}
+function ksNormal(z){const a=[...z].sort((x,y)=>x-y),M=a.length;let d=0;a.forEach((x,i)=>{const F=Phi(x);d=Math.max(d,Math.abs((i+1)/M-F),Math.abs(i/M-F))});return d}
+function study(model,p,seed,M){
+ const mu=model==="bernoulli"?p:0,v=model==="bernoulli"?p*(1-p):1,sd=Math.sqrt(v),eps=[0.1,0.05];
+ const rows=STUDY_NS.map(n=>{const q=simulate(n,M,model,p,seed+n);
+  const z=sd>0?q.totals.map(t=>(t-n*mu)/(sd*Math.sqrt(n))):q.totals.map(()=>0);
+  return {n,vt:variance(q.totals),va:variance(q.averages),vn:variance(q.normalized),pr:eps.map(e=>q.averages.filter(x=>Math.abs(x-mu)>e+1e-12).length/M),ks:sd>0?ksNormal(z):NaN,z:CLT_NS.includes(n)?z:null}});
+ return {rows,mu,v,sd,eps,M,model};
+}
+function drawLog(canvas,series,xLabel,yLabel,o={}){
+ const {ctx,w,h}=canvasSetup(canvas);const a=axes(ctx,w,h,xLabel,yLabel);
+ const xs=series.flatMap(s=>s.data.map(d=>Math.log10(d[0]))),xmin=Math.min(...xs),xmax=Math.max(...xs);
+ const ys=series.flatMap(s=>s.data.map(d=>d[1])).filter(v=>v>0&&Number.isFinite(v));if(!ys.length)ys.push(1);
+ let ymin,ymax;
+ if(o.logY){ymin=Math.floor(Math.log10(Math.min(...ys)));ymax=Math.ceil(Math.log10(Math.max(...ys)));if(ymin===ymax)ymax++}else{ymin=0;ymax=Math.max(...ys,1e-9)*1.1}
+ const X=n=>a.L+(Math.log10(n)-xmin)/(xmax-xmin)*a.pw,Y=v=>{const t=o.logY?(Math.log10(Math.max(v,1e-12))-ymin)/(ymax-ymin):(v-ymin)/(ymax-ymin);return a.T+a.ph-Math.max(0,Math.min(1,t))*a.ph};
+ ctx.fillStyle="#7b7165";ctx.font="10px system-ui";ctx.textAlign="center";
+ series[0].data.forEach(d=>ctx.fillText(d[0],X(d[0]),h-a.B+15));
+ ctx.textAlign="right";
+ if(o.logY){for(let k=ymin;k<=ymax;k++)ctx.fillText("1e"+k,a.L-7,Y(10**k)+3)}else{for(let i=0;i<=4;i++){const v=ymax*i/4;ctx.fillText(v.toFixed(2),a.L-7,Y(v)+3)}}
+ series.forEach(s=>{ctx.strokeStyle=s.color;ctx.lineWidth=2;ctx.setLineDash(s.dash||[]);ctx.beginPath();s.data.forEach((d,i)=>i?ctx.lineTo(X(d[0]),Y(d[1])):ctx.moveTo(X(d[0]),Y(d[1])));ctx.stroke();if(!s.dash){ctx.fillStyle=s.color;s.data.forEach(d=>{ctx.beginPath();ctx.arc(X(d[0]),Y(d[1]),2.5,0,7);ctx.fill()})}});
+ ctx.setLineDash([]);
+}
+const leg=items=>items.map(([c,t])=>`<span><i class="dot" style="background:${c}"></i>${t}</span>`).join("");
+function drawVariance(r){
+ const emp=[variance(r.totals),variance(r.averages),variance(r.normalized)],th=[r.n*r.v,r.v/r.n,r.v],labels=["Total Sₙ","Average Sₙ/n","Normalized Sₙ/√n"];
+ const {ctx,w,h}=canvasSetup($("varianceChart"));const a=axes(ctx,w,h,"Score quantity","Variance (log scale)");
+ const all=[...emp,...th].map(x=>Math.max(x,1e-12));
+ const hi=Math.ceil(Math.log10(Math.max(...all))),L0=Math.min(Math.floor(Math.log10(Math.min(...all))),hi-1)-0.5;
+ const Y=v=>a.T+a.ph-(Math.log10(Math.max(v,1e-12))-L0)/(hi-L0)*a.ph,base=a.T+a.ph,slot=a.pw/3,bar=slot*.27;
+ ctx.font="11px system-ui";ctx.textAlign="center";
+ labels.forEach((lab,i)=>{const cx=a.L+slot*(i+.5);ctx.fillStyle="#77634d";ctx.fillRect(cx-bar-2,Y(emp[i]),bar,base-Y(emp[i]));ctx.fillStyle="#e58b72";ctx.fillRect(cx+2,Y(th[i]),bar,base-Y(th[i]));ctx.fillStyle="#bd735b";ctx.fillText(lab,cx,h-a.B+16)});
+ ctx.textAlign="right";ctx.fillStyle="#7b7165";for(let k=Math.ceil(L0);k<=hi;k++)ctx.fillText("1e"+k,a.L-7,Y(10**k)+3);
+}
+function renderStudy(r){
+ const S=r.study,R=S.rows,col=["#77634d","#bd735b","#82917a"];
+ drawLog($("llnChart"),[
+  {data:R.map(x=>[x.n,x.pr[0]]),color:col[0]},{data:R.map(x=>[x.n,x.pr[1]]),color:col[1]},
+  {data:R.map(x=>[x.n,Math.min(1,S.v/(x.n*S.eps[0]**2))]),color:"#9a9185",dash:[5,4]}],"Number of systems n","Probability");
+ $("llnLegend").innerHTML=leg([[col[0],"ε = 0.10"],[col[1],"ε = 0.05"],["#9a9185","Chebyshev bound (ε = 0.10)"]]);
+ drawLog($("varN"),[
+  {data:R.map(x=>[x.n,x.vt]),color:col[0]},{data:R.map(x=>[x.n,S.v*x.n]),color:col[0],dash:[5,4]},
+  {data:R.map(x=>[x.n,x.va]),color:col[1]},{data:R.map(x=>[x.n,S.v/x.n]),color:col[1],dash:[5,4]},
+  {data:R.map(x=>[x.n,x.vn]),color:col[2]},{data:R.map(x=>[x.n,S.v]),color:col[2],dash:[5,4]}],"Number of systems n","Variance",{logY:true});
+ $("varLegend").innerHTML=leg([[col[0],"Var(Sₙ)"],[col[1],"Var(Sₙ/n)"],[col[2],"Var(Sₙ/√n)"]]);
+ const gap=R.map(x=>[x.n,0.5*lat(r)*0.39894/(Math.max(S.sd,1e-9)*Math.sqrt(x.n))]);
+ drawLog($("ksChart"),[{data:R.filter(x=>Number.isFinite(x.ks)&&x.ks>0).map(x=>[x.n,x.ks]),color:col[0]},{data:gap,color:"#9a9185",dash:[5,4]}],"Number of systems n","KS distance",{logY:true});
+ const bern=r.model==="bernoulli";
+ $("cltSub").textContent=bern?"Bernoulli: the uncentered Sₙ/√n drifts to ∞ (mean p√n), so the centered and scaled Zₙ=(Sₙ−np)/√(np(1−p)) is shown. It also converges to N(0,1).":"Rademacher: Zₙ = Sₙ/√n (mean 0, variance 1). Red curve: standard normal density.";
+ const normal={fn:x=>Math.exp(-x*x/2)/Math.sqrt(2*Math.PI)};
+ if(!$("clt0"))$("cltGrid").innerHTML=CLT_NS.map((n,i)=>`<div class="chartbox"><p id="cltT${i}"></p><canvas id="clt${i}" class="chart" style="height:220px"></canvas></div>`).join("");
+ CLT_NS.forEach((n,i)=>{const row=R.find(x=>x.n===n);$("cltT"+i).textContent=`n = ${n}   KS = ${fmt(row.ks)}`;
+  histogram($("clt"+i),row.z,normal,S.sd>0?lat(r)/(S.sd*Math.sqrt(n)):0)});
+ const L=R[R.length-1];
+ $("convergenceText").textContent=`At n=${L.n} (${S.M} attackers): P(|Sₙ/n−μ|>0.1)=${fmt(L.pr[0])}, Var(Sₙ/n)=${fmt(L.va)} (theory ${fmt(S.v/L.n)}), Var(Sₙ/√n)=${fmt(L.vn)} (theory ${fmt(S.v)}), KS distance to N(0,1)=${fmt(L.ks)}.`;
+}
+function renderInterp(r){
+ const pooled=r.totals.reduce((s,x)=>s+x,0),sdT=Math.sqrt(r.v*r.n),sdA=Math.sqrt(r.v/r.n);
+ $("interpText").innerHTML=`<p><strong>One attacker, n systems.</strong> Each attacker's total score has mean ${fmt(r.n*r.mu)} and standard deviation σ√n = ${fmt(sdT)}. Bigger systems mean larger absolute fluctuations (Var(Sₙ)=nσ²). The score per system Sₙ/n has standard deviation σ/√n = ${fmt(sdA)} and concentrates on μ=${r.mu} (LLN): a long campaign looks more and more predictable per system, ${r.model==="rademacher"?"and in the symmetric case successes and failures cancel, so the average goes to 0 while the total only wanders like √n":"and the total grows linearly like np"}.</p>
+ <p><strong>Effect of m.</strong> Adding attackers does not change an individual attacker's distribution; it gives a better estimate of it (standard error of the mean average ≈ σ/√(nm) = ${fmt(Math.sqrt(r.v/(r.n*r.m)))}; observed ${fmt(Math.sqrt(variance(r.averages)/r.m))}). Pooling all attackers, the aggregate score has mean mnμ = ${fmt(r.m*r.n*r.mu)} and standard deviation σ√(mn) = ${fmt(Math.sqrt(r.v*r.m*r.n))}; observed total ${fmt(pooled)}. So aggregate penetration grows with both n and m, but its relative uncertainty shrinks like 1/√(mn).</p>
+ <p><strong>Normalization.</strong> Sₙ/√n is the scale at which the fluctuations neither blow up nor vanish: its variance stays ${fmt(r.v)} for every n. For the symmetric Rademacher case its law approaches N(0,1) (CLT), so the probability of an extreme aggregate score can be approximated by Gaussian tails.</p>`;
+}
+function render(){
+ const r=current;const mu=r.mu,v=r.v;
+ const quantities=[
+  ["Total score Sₙ",r.totals, r.n*mu,r.n*v],
+  ["Average Sₙ/n",r.averages,mu,v/r.n],
+  ["Normalized Sₙ/√n",r.normalized,mu*Math.sqrt(r.n),v]
+ ];
+ $("metrics").innerHTML=[
+  ["Model",r.model==="bernoulli"?"Bernoulli":"Rademacher",`n = ${r.n}, m = ${r.m}, seed = ${r.seed}`],
+  ["Mean of total",fmt(mean(r.totals)),`Theory: ${fmt(r.n*mu)}`],
+  ["Mean of average",fmt(mean(r.averages)),`Theory: ${fmt(mu)}`],
+  ["Variance of normalized",fmt(variance(r.normalized)),`Theory: ${fmt(v)}`]
+ ].map(([label,value,detail])=>`<div class="metric"><div class="label">${label}</div><div class="value">${value}</div><div class="detail">${detail}</div></div>`).join("");
+ $("resultsTable").innerHTML=quantities.map(([label,data,tm,tv])=>`<tr><td>${label}</td><td class="num">${fmt(mean(data))}</td><td class="num">${fmt(tm)}</td><td class="num">${fmt(variance(data))}</td><td class="num">${fmt(tv)}</td></tr>`).join("");
+ drawTrajectory(r);
+ histogram($("totalHist"),r.totals,null,lat(r));
+ histogram($("averageHist"),r.averages,null,lat(r)/r.n);
+ const normalRef={fn:x=>Math.exp(-x*x/2)/Math.sqrt(2*Math.PI)};
+ histogram($("normalizedHist"),r.normalized,r.model==="rademacher"?normalRef:null,lat(r)/Math.sqrt(r.n));
+ drawVariance(r);renderStudy(r);renderInterp(r);
+}
+function run(){
+ const n=Number($("n").value),m=Number($("m").value),p=Math.max(0,Math.min(1,Number($("p").value)||0));
+ $("p").value=p;
+ const seed=Math.max(1,Math.floor(Number($("seed").value)||2026));$("seed").value=seed;current=simulate(n,m,$("model").value,p,seed);current.study=study(current.model,p,seed,Math.min(m,2000));render();
+}
+$("run").addEventListener("click",run);
+$("reset").addEventListener("click",()=>{$("model").value="rademacher";$("n").value="100";$("m").value="1000";$("p").value="0.3";$("seed").value="2026";run()});
+$("download").addEventListener("click",()=>{
+ if(!current)return;const r=current;
+ const rows=[["quantity","empirical_mean","theoretical_mean","empirical_variance","theoretical_variance"],
+ ["total",mean(r.totals),r.n*r.mu,variance(r.totals),r.n*r.v],
+ ["average",mean(r.averages),r.mu,variance(r.averages),r.v/r.n],
+ ["normalized",mean(r.normalized),r.mu*Math.sqrt(r.n),variance(r.normalized),r.v]];
+ const csv=rows.map(row=>row.join(",")).join("\n");
+ const blob=new Blob([csv],{type:"text/csv;charset=utf-8;"});const url=URL.createObjectURL(blob);
+ const a=document.createElement("a");a.href=url;a.download="penetration-score-summary.csv";a.click();URL.revokeObjectURL(url);
+});
+function renderSavedRuns(){
+ const body=$("savedRuns");
+ if(!savedRuns.length){body.innerHTML='<tr><td colspan="8">No saved runs yet. Run an experiment, then select “Save run to compare”.</td></tr>';return;}
+ body.innerHTML=savedRuns.map((r,i)=>`<tr><td>${i+1}</td><td>${r.model}</td><td class="num">${r.n}</td><td class="num">${r.m}</td><td class="num">${r.seed}</td><td class="num">${fmt(r.avgMean)}</td><td class="num">${fmt(r.normVar)}</td><td><button class="btn secondary remove-run" data-index="${i}" style="padding:5px 8px">Remove</button></td></tr>`).join("");
+ body.querySelectorAll(".remove-run").forEach(btn=>btn.addEventListener("click",()=>{savedRuns.splice(Number(btn.dataset.index),1);renderSavedRuns();}));
+}
+$("saveRun").addEventListener("click",()=>{if(!current)return;const r=current;savedRuns.push({model:r.model,n:r.n,m:r.m,seed:r.seed,avgMean:mean(r.averages),normVar:variance(r.normalized)});renderSavedRuns();$("comparisonPanel").scrollIntoView({behavior:"smooth",block:"nearest"});});
+$("clearRuns").addEventListener("click",()=>{savedRuns=[];renderSavedRuns();});
+window.addEventListener("resize",()=>{if(current)render()});
+run();
+})();
+</script>
+</body>
+</html>
